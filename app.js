@@ -12,7 +12,7 @@ app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
-mongoose.connect("mongodb://localhost:27017/todolistDB", { useUnifiedTopology: true });
+mongoose.connect("mongodb://localhost:27017/todolistDB", { useNewUrlParser: true });
 const itemsSchema = new mongoose.Schema({
 	name: {
 		type: String,
@@ -22,35 +22,33 @@ const itemsSchema = new mongoose.Schema({
 const Item = mongoose.model("Item", itemsSchema);
 
 const item_1 = new Item({
-  name: "Welcome to Your todolist!"
+	name: "Welcome to Your todolist!",
 });
 const item_2 = new Item({
-  name: "Hit the + button to add a new item."
+	name: "Hit the + button to add a new item.",
 });
 const item_3 = new Item({
-  name: "<-- Hit this to delete an item"
+	name: "<-- Hit this to delete an item",
 });
 const defaultItems = [item_1, item_2, item_3];
-Item.insertMany(defaultItems)
-  .then(() => {
-    console.log("Succesfully saved");
-  })
-  .catch((error) => {
-    console.log(error);
-  })
-  //!
-  /*.finally(() => {
-    mongoose.disconnect();
-  }); */
-
+/* Item.insertMany(defaultItems)
+	.then(() => {
+		console.log("Succesfully saved");
+	})
+	.catch((error) => {
+		console.log(error);
+	}); */
 
 /* const items = ["Buy Food", "Cook Food", "Eat Food"];
 const workItems = []; */
 
 app.get("/", function (req, res) {
 	const day = date.getDate();
-
-	res.render("list", { listTitle: day, newListItems: items });
+	Item.find({})
+		.then((foundItems) =>{
+			res.render("list", { listTitle: day, newListItems: foundItems });
+		});
+	
 });
 
 app.post("/", function (req, res) {
