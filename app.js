@@ -31,36 +31,49 @@ const item_3 = new Item({
 	name: "<-- Hit this to delete an item",
 });
 const defaultItems = [item_1, item_2, item_3];
-/* Item.insertMany(defaultItems)
-	.then(() => {
-		console.log("Succesfully saved");
-	})
-	.catch((error) => {
-		console.log(error);
-	}); */
 
 /* const items = ["Buy Food", "Cook Food", "Eat Food"];
 const workItems = []; */
 
 app.get("/", function (req, res) {
 	const day = date.getDate();
-	Item.find({})
-		.then((foundItems) =>{
+
+	Item.find({}).then((foundItems) => {
+		if (foundItems.length == 0) {
+			Item.insertMany(defaultItems)
+				.then(() => {
+					console.log("Succesfully saved");
+				})
+				.catch((error) => {
+					console.log(error);
+				});
+			res.redirect("/");
+		} else {
 			res.render("list", { listTitle: day, newListItems: foundItems });
-		});
-	
+		}
+	});
 });
 
 app.post("/", function (req, res) {
-	const item = req.body.newItem;
-
-	if (req.body.list === "Work") {
+	const createdItem = new Item({
+		name: req.body.newItem,
+	});
+	createdItem.save()
+		.then((savedItem) => {
+			console.log("Item saved:", savedItem);
+		})
+		.catch((error) => {
+			console.error("Error saving item:", error);
+		});
+		
+	res.redirect("/");
+	/* 	if (req.body.list === "Work") {
 		workItems.push(item);
 		res.redirect("/work");
 	} else {
 		items.push(item);
 		res.redirect("/");
-	}
+	} */
 });
 
 app.get("/work", function (req, res) {
