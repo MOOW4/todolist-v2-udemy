@@ -32,9 +32,6 @@ const item_3 = new Item({
 });
 const defaultItems = [item_1, item_2, item_3];
 
-/* const items = ["Buy Food", "Cook Food", "Eat Food"];
-const workItems = []; */
-
 app.get("/", function (req, res) {
 	const day = date.getDate();
 
@@ -58,14 +55,15 @@ app.post("/", function (req, res) {
 	const createdItem = new Item({
 		name: req.body.newItem,
 	});
-	createdItem.save()
+	createdItem
+		.save()
 		.then((savedItem) => {
 			console.log("Item saved:", savedItem);
 		})
 		.catch((error) => {
 			console.error("Error saving item:", error);
 		});
-		
+
 	res.redirect("/");
 	/* 	if (req.body.list === "Work") {
 		workItems.push(item);
@@ -74,6 +72,20 @@ app.post("/", function (req, res) {
 		items.push(item);
 		res.redirect("/");
 	} */
+});
+
+app.post("/delete", (req, res) => {
+	//console.log(req.body);
+	const checkedItemId = req.body.checkbox;
+	Item.findByIdAndDelete(checkedItemId)
+		.then((removedtem) => {
+			console.log("Item removed:", removedtem);
+			res.redirect("/");
+		})
+		.catch((error) => {
+			console.error("Error saving item:", error);
+		});
+
 });
 
 app.get("/work", function (req, res) {
