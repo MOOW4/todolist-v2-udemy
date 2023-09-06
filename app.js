@@ -32,6 +32,17 @@ const item_3 = new Item({
 });
 const defaultItems = [item_1, item_2, item_3];
 
+const listSchema = new mongoose.Schema({
+	name: {
+		type: String,
+		required: true,
+	},
+	items: [itemsSchema],
+});
+const List = mongoose.model("List", listSchema);
+
+//* /////////////////// ROUTES ///////////////////////////
+
 app.get("/", function (req, res) {
 	const day = date.getDate();
 
@@ -85,11 +96,33 @@ app.post("/delete", (req, res) => {
 		.catch((error) => {
 			console.error("Error saving item:", error);
 		});
-
 });
 
-app.get("/work", function (req, res) {
+/* app.get("/work", function (req, res) {
 	res.render("list", { listTitle: "Work List", newListItems: workItems });
+}); */
+
+app.get("/:listName", (req, res) => {
+	//const day = date.getDate();
+	const customListName = req.params.listName;
+	List.findOne({ name: customListName })
+		.then((foundList) => {
+			//# FOUND
+			if (!foundList) {
+				const list = new List({
+					name: customListName,
+					items: defaultItems,
+				});
+				list.save();
+				console.log("Saved");
+				res.redirect("/"+customListName);
+			} 
+			//! NOT FOUND
+			else {
+				console.log("Exists");
+				res.render("list", { listTitle: foundList.name, newListItems: foundList.items });
+			}
+		});
 });
 
 app.get("/about", function (req, res) {
