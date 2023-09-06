@@ -63,26 +63,33 @@ app.get("/", function (req, res) {
 });
 
 app.post("/", function (req, res) {
+
+	const listName = req.body.list;
+	const itemName = req.body.newItem; 
+
 	const createdItem = new Item({
-		name: req.body.newItem,
+		name: itemName,
 	});
-	createdItem
+
+	if(listName == date.getDate()){
+		createdItem.save();
+		res.redirect("/");
+	} else {
+		List.findOne({name: listName})
+			.then((foundList) => {
+				foundList.items.push(createdItem);
+				foundList.save();
+				res.redirect(`/${listName}`);
+			});
+	}
+/* 	createdItem
 		.save()
 		.then((savedItem) => {
 			console.log("Item saved:", savedItem);
 		})
 		.catch((error) => {
 			console.error("Error saving item:", error);
-		});
-
-	res.redirect("/");
-	/* 	if (req.body.list === "Work") {
-		workItems.push(item);
-		res.redirect("/work");
-	} else {
-		items.push(item);
-		res.redirect("/");
-	} */
+		}); */
 });
 
 app.post("/delete", (req, res) => {
@@ -98,12 +105,7 @@ app.post("/delete", (req, res) => {
 		});
 });
 
-/* app.get("/work", function (req, res) {
-	res.render("list", { listTitle: "Work List", newListItems: workItems });
-}); */
-
 app.get("/:listName", (req, res) => {
-	//const day = date.getDate();
 	const customListName = req.params.listName;
 	List.findOne({ name: customListName })
 		.then((foundList) => {
