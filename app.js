@@ -12,8 +12,8 @@ app.set("view engine", "ejs");
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
-
-mongoose.connect("mongodb://localhost:27017/todolistDB", { useNewUrlParser: true });
+/* mongodb://localhost:27017 */
+mongoose.connect("mongodb+srv://admin-christian:Princzperzie1@cluster0.plsrxc2.mongodb.net/todolistDB", { useNewUrlParser: true });
 const itemsSchema = new mongoose.Schema({
 	name: {
 		type: String,
@@ -51,10 +51,10 @@ app.get("/", function (req, res) {
 		if (foundItems.length == 0) {
 			Item.insertMany(defaultItems)
 				.then(() => {
-					console.log("Succesfully saved");
+					//console.log("Succesfully saved");
 				})
 				.catch((error) => {
-					console.log(error);
+					//console.log(error);
 				});
 			res.redirect("/");
 		} else {
@@ -98,11 +98,11 @@ app.post("/delete", (req, res) => {
 	if (listName == date.getDate()) {
 		Item.findByIdAndDelete(checkedItemId)
 			.then((removedtem) => {
-				console.log("Item removed:", removedtem);
+				//console.log("Item removed:", removedtem);
 				res.redirect("/");
 			})
 			.catch((error) => {
-				console.error("Error deleting item:", error);
+				//console.error("Error deleting item:", error);
 			});
 	} else {
 		//? BOTH OF THESE WORK
@@ -112,7 +112,7 @@ app.post("/delete", (req, res) => {
 				res.redirect(`/${listName}`);
 			})
 		.catch((error) => {
-				console.error("Error deleting item:", error);
+				//console.error("Error deleting item:", error);
 			});
 
 /* 		List.findOne({ name: listName })
@@ -138,12 +138,12 @@ app.get("/:listName", (req, res) => {
 				items: defaultItems,
 			});
 			list.save();
-			console.log("Saved");
+			//console.log("Saved");
 			res.redirect("/" + customListName);
 		}
 		//! NOT FOUND
 		else {
-			console.log("Exists");
+			//console.log("Exists");
 			res.render("list", { listTitle: foundList.name, newListItems: foundList.items });
 		}
 	});
